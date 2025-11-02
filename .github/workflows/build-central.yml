@@ -13,6 +13,4 @@ jobs:
     secrets:
       GHCR_PAT: ${{ secrets.GHCR_PAT }}
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-      TOKEN_IPINFO: ${{ secrets.TOKEN_IPINFO }}
-    with:
       build_args: TOKEN_IPINFO=${{ secrets.TOKEN_IPINFO }}
