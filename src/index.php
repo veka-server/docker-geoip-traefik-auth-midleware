@@ -72,7 +72,7 @@ try {
     try {
         $pays_reel = $record->country->isoCode;
     } catch (\Throwable $th) {
-        $pays_reel = 'unknown'
+        $pays_reel = 'unknown';
     }
 
     echo "Forbidden : your IP is ".($ip ?? unknown).' '.$pays_reel;
