@@ -1,9 +1,5 @@
 FROM alpine:latest
 
-# Token IPinfo à passer via build-arg ou variable d'environnement au runtime
-ARG TOKEN_IPINFO
-ENV TOKEN_IPINFO=${TOKEN_IPINFO}
-
 # Installer PHP, FPM, Composer et utilitaires
 RUN apk add --no-cache php83 curl gzip unzip composer
 
