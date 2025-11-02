@@ -24,18 +24,10 @@ jobs:
           TOKEN_IPINFO: ${{ secrets.TOKEN_IPINFO }}
         run: |
           mkdir -p custom_data
-          
-          echo "🔍 Tentative de téléchargement..."
-          echo "URL: https://ipinfo.io/data/location.mmdb.gz?token=${TOKEN_IPINFO}"
-          
+                   
           # Télécharger avec headers pour voir l'erreur
-          curl -i -L -o /tmp/location.mmdb.gz "https://ipinfo.io/data/location.mmdb.gz?token=${TOKEN_IPINFO}" 2>&1 | head -30
-          
-          echo ""
-          echo "📄 Contenu du fichier téléchargé:"
-          cat /tmp/location.mmdb.gz
-          echo ""
-          
+          curl -i -L -o /tmp/location.mmdb.gz "https://ipinfo.io/data/ipinfo_lite.mmdb?token=${TOKEN_IPINFO}" 2>&1 | head -30
+                    
           if [ ! -f "/tmp/location.mmdb.gz" ]; then
             echo "❌ Erreur: location.mmdb.gz non téléchargé"
             exit 1
@@ -62,6 +54,7 @@ jobs:
           path: custom_data/location.mmdb
 
   call-central:
+    needs: download-geoip
     uses: veka-server/github-actions-templates/.github/workflows/docker-build.yml@main
     secrets:
       GHCR_PAT: ${{ secrets.GHCR_PAT }}
