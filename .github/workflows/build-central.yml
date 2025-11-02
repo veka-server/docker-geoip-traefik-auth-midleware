@@ -24,11 +24,17 @@ jobs:
           TOKEN_IPINFO: ${{ secrets.TOKEN_IPINFO }}
         run: |
           mkdir -p custom_data
-          echo "https://ipinfo.io/data/location.mmdb.gz?token=${TOKEN_IPINFO}"
-          curl -L -o /tmp/location.mmdb.gz "https://ipinfo.io/data/location.mmdb.gz?token=${TOKEN_IPINFO}"
-
-          ls -alh /tmp/
+          
+          echo "🔍 Tentative de téléchargement..."
+          echo "URL: https://ipinfo.io/data/location.mmdb.gz?token=${TOKEN_IPINFO}"
+          
+          # Télécharger avec headers pour voir l'erreur
+          curl -i -L -o /tmp/location.mmdb.gz "https://ipinfo.io/data/location.mmdb.gz?token=${TOKEN_IPINFO}" 2>&1 | head -30
+          
+          echo ""
+          echo "📄 Contenu du fichier téléchargé:"
           cat /tmp/location.mmdb.gz
+          echo ""
           
           if [ ! -f "/tmp/location.mmdb.gz" ]; then
             echo "❌ Erreur: location.mmdb.gz non téléchargé"
