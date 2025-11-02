@@ -1,5 +1,5 @@
 <?php
-# La bdd est dispo ici : https://www.maxmind.com/en/accounts/1248763/geoip/downloads
+# La bdd est dispo ici : https://ipinfo.io/dashboard/downloads
 
 #Récupère le paramètre pays
 $pays = strtoupper($_GET['pays'] ?? '');
@@ -76,5 +76,6 @@ try {
 
 // Sauvegarde le cache (création ou mise à jour)
 file_put_contents($cacheFile, json_encode($cache));
+
 
 die();
