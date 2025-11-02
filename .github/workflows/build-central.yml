@@ -19,32 +19,15 @@ jobs:
           mkdir -p custom_data
                    
           # Télécharger avec headers pour voir l'erreur
-          curl -i -L -o /tmp/location.mmdb.gz "https://ipinfo.io/data/ipinfo_lite.mmdb?token=${TOKEN_IPINFO}" 2>&1 | head -30          
+          curl -i -L -o /tmp/location.mmdb "https://ipinfo.io/data/ipinfo_lite.mmdb?token=${TOKEN_IPINFO}" 2>&1 | head -30          
 
-          if [ ! -f "/tmp/location.mmdb.gz" ]; then
+          if [ ! -f "/tmp/location.mmdb" ]; then
             echo "❌ Erreur: location.mmdb.gz non téléchargé"
             exit 1
           fi
-          
-          # Vérifier le type de fichier
-          echo "📋 Type de fichier:"
-          file /tmp/location.mmdb.gz
-          
-          filesize=$(du -h /tmp/location.mmdb.gz | cut -f1)
-          echo "📦 Taille: $filesize"
-          
-          # Vérifier si c'est vraiment du gzip (et pas une erreur)
-          if file /tmp/location.mmdb.gz | grep -q "gzip"; then
-            echo "✅ Format gzip détecté, décompression..."
-            gzip -d /tmp/location.mmdb.gz
-            mv /tmp/location.mmdb ./custom_data/location.mmdb
-            echo "✅ Fichier prêt: $(du -h ./custom_data/location.mmdb | cut -f1)"
-          else
-            echo "❌ Erreur: Le fichier n'est pas en gzip"
-            echo "Contenu reçu:"
-            cat /tmp/location.mmdb.gz
-            exit 1
-          fi
+
+          mv /tmp/location.mmdb ./custom_data/location.mmdb
+          echo "✅ Fichier prêt: $(du -h ./custom_data/location.mmdb | cut -f1)"
 
       # Upload en artifact
       - name: Upload custom data
