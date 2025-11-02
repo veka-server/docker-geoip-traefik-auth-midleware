@@ -8,9 +8,51 @@ on:
   workflow_dispatch:       # permet de lancer manuellement aussi
         
 jobs:
+  download-geoip:
+    runs-on: ubuntu-latest
+    steps:
+      
+      # Installer les dépendances nécessaires
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y curl gzip
+      
+      # Télécharger le fichier GeoIP
+      - name: Download GeoIP database
+        env:
+          TOKEN_IPINFO: ${{ secrets.TOKEN_IPINFO }}
+        run: |
+          mkdir -p custom_data
+          curl -L -o /tmp/location.mmdb.gz "https://ipinfo.io/data/location.mmdb.gz?token=${TOKEN_IPINFO}"
+          
+          if [ ! -f "/tmp/location.mmdb.gz" ]; then
+            echo "❌ Erreur: location.mmdb.gz non téléchargé"
+            exit 1
+          fi
+          echo "✅ GeoIP database téléchargé ($(du -h /tmp/location.mmdb.gz | cut -f1))"
+
+          # Décompresser
+          gzip -d /tmp/location.mmdb.gz 
+          
+          # Vérifier que le fichier décompressé existe
+          if [ ! -f "/tmp/location.mmdb" ]; then
+            echo "❌ Erreur: decompression échouée"
+            exit 1
+          fi
+          
+          mv /tmp/location.mmdb ./custom_data/location.mmdb 
+          echo "✅ Fichier prêt: $(du -h ./custom_data/location.mmdb | cut -f1)"
+
+      # Upload en artifact
+      - name: Upload custom data
+        uses: actions/upload-artifact@v4
+        with:
+          name: custom_data
+          path: custom_data/location.mmdb
+
   call-central:
     uses: veka-server/github-actions-templates/.github/workflows/docker-build.yml@main
     secrets:
       GHCR_PAT: ${{ secrets.GHCR_PAT }}
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-      build_args: TOKEN_IPINFO=${{ secrets.TOKEN_IPINFO }}
