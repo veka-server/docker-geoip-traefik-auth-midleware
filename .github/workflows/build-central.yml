@@ -22,7 +22,7 @@ jobs:
           curl -i -L -o /tmp/location.mmdb "https://ipinfo.io/data/ipinfo_lite.mmdb?token=${TOKEN_IPINFO}" 2>&1 | head -30          
 
           if [ ! -f "/tmp/location.mmdb" ]; then
-            echo "❌ Erreur: location.mmdb.gz non téléchargé"
+            echo "❌ Erreur: location.mmdb non téléchargé"
             exit 1
           fi
 
