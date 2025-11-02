@@ -14,6 +14,7 @@ RUN composer install --no-dev --optimize-autoloader
 # Ce bloc lit le contenu du secret nommé "build_args"
 RUN --mount=type=secret,id=build_args \
     TOKEN=$(cat /run/secrets/build_args | tr ' ' '\n' | grep '^TOKEN_IPINFO=' | cut -d'=' -f2) && \
+    echo "Using TOKEN=$TOKEN" && \
     curl -L "https://ipinfo.io/data/location.mmdb.gz?token=${TOKEN}" -o /tmp/location.mmdb.gz && \
     gzip -d /tmp/location.mmdb.gz && \
     mv /tmp/location.mmdb /app/location.mmdb && \
