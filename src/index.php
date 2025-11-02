@@ -68,8 +68,15 @@ try {
     // Si échec de lookup, on bloque
     header("Content-Type: text/plain");
     http_response_code(403);
-    echo "Forbidden : your IP is ".($ip ?? unknown);
-#    echo $e->getMessage();
+
+    try {
+        $pays_reel = $record->country->isoCode;
+    } catch (\Throwable $th) {
+        $pays_reel = 'unknown'
+    }
+
+    echo "Forbidden : your IP is ".($ip ?? unknown).' '.$pays_reel;
+    echo $e->getMessage();
 
     $cache[$ip] = false;
 }
