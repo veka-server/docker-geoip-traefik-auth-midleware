@@ -48,10 +48,16 @@ try {
 
         // Crée le reader
         $reader = new GeoIp2\Database\Reader($geoipDbFile);
-        $record = $reader->country($ip);
 
+        try {
+            $record = $reader->country($ip); // Fonctionne avec les bases full
+        } catch (\Throwable $th) {
+            $record = $reader->city($ip); // Fonctionne avec les bases lite
+            $isoCode = $record->country->isoCode;
+        }
+    
         // Autorise seulement les IP du pays
-        if ($record->country->isoCode !== $pays) {
+        if ($isoCode !== $pays) {
             throw new \Exception("Mauvais pays", 1);
         }
 
@@ -70,7 +76,7 @@ try {
     http_response_code(403);
 
     try {
-        $pays_reel = $record->country->isoCode;
+        $pays_reel = $isoCode;
     } catch (\Throwable $th) {
         $pays_reel = 'unknown';
     }
