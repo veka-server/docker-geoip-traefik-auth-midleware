@@ -53,9 +53,10 @@ try {
             $record = $reader->country($ip); // Fonctionne avec les bases full
         } catch (\Throwable $th) {
             $record = $reader->city($ip); // Fonctionne avec les bases lite
-            $isoCode = $record->country->isoCode;
         }
-    
+
+        $isoCode = $record->country->isoCode;
+        
         // Autorise seulement les IP du pays
         if ($isoCode !== $pays) {
             throw new \Exception("Mauvais pays", 1);
@@ -75,11 +76,7 @@ try {
     header("Content-Type: text/plain");
     http_response_code(403);
 
-    try {
-        $pays_reel = $isoCode;
-    } catch (\Throwable $th) {
-        $pays_reel = 'unknown';
-    }
+    $pays_reel = $isoCode ?? 'unknown';
 
     echo "Forbidden : your IP is ".($ip ?? unknown).' '.$pays_reel;
     echo $e->getMessage();
