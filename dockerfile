@@ -20,4 +20,4 @@ RUN composer install --no-dev --optimize-autoloader
 EXPOSE 8080
 
 # Lancer le serveur PHP intégré au runtime
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "/app", "index.php"]
+CMD ["php", "-S", "0.0.0.0:8080", "-t", "/app", "-r", "index.php"]
