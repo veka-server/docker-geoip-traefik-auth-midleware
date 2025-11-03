@@ -1,16 +1,14 @@
 <?php
-# La bdd est dispo ici : https://ipinfo.io/dashboard/downloads
+# La bdd est dispo ici : https://ipinfo.io/dashboard/downloads version lite
 
 #Récupère le paramètre pays
 $pays = strtoupper($_GET['pays'] ?? '');
 
-// Liste blanche des codes de pays autorisés (ISO 3166-1 alpha-2)
-$allowedCountries = ['FR', 'DE', 'ES', 'IT', 'GB'];
-
-if (!in_array($pays, $allowedCountries) || empty($pays)) {
+// Vérifie que le pays est 2 caractères alphabétiques (ISO 3166-1 alpha-2)
+if (!preg_match('/^[A-Z]{2}$/', $pays)) {
     header("Content-Type: text/plain");
     http_response_code(403);
-    echo "Forbidden : Il manque le pays a verifier dans la config.";
+    echo "Forbidden : Le pays doit être un code ISO 3166-1 alpha-2 valide (2 lettres majuscules).";
     die();
 }
 
@@ -42,50 +40,44 @@ if (file_exists($cacheFile) && filesize($cacheFile) <= $maxCacheSize) {
 $geoipDbFile = './location.mmdb';
 
 try {
+
+    if(!isset($cache[$ip])) {
         
-    if (!isset($cache[$ip])) {
-        require_once 'vendor/autoload.php';
-
-        // Crée le reader
-        $reader = new GeoIp2\Database\Reader($geoipDbFile);
-
         try {
-            $record = $reader->country($ip); // Fonctionne avec les bases full
-        } catch (\Throwable $th) {
-            $record = $reader->city($ip); // Fonctionne avec les bases lite
+            require_once 'vendor/autoload.php';
+            $dbReader = new MaxMind\Db\Reader($geoipDbFile);
+            $p = $dbReader->get($ip);
+            $country_code = $p[country_code];
+        }catch(){
+            $country_code = 'country unknown';
         }
-
-        $isoCode = $record->country->isoCode;
         
         // Autorise seulement les IP du pays
-        if ($isoCode !== $pays) {
+        if (country_code !== $pays) {
             throw new \Exception("Mauvais pays", 1);
         }
 
-    } else if($cache[$ip] === false) {
+    }
+    if( $cache[$ip] === false) {
         throw new \Exception("Mauvais pays from cache", 1);
     }
 
-    $cache[$ip] = true;
+    $statut_cache = true;
             
     header("Content-Type: text/plain");
     http_response_code(200);
 
 } catch (\Exception $e) {
     // Si échec de lookup, on bloque
-    header("Content-Type: text/plain");
     http_response_code(403);
 
-    $pays_reel = $isoCode ?? 'unknown';
+    echo "Forbidden : your IP is ".($ip ?? unknown).' '.$country_code.' ';
+#    echo $e->getMessage();
 
-    echo "Forbidden : your IP is ".($ip ?? unknown).' '.$pays_reel;
-    echo $e->getMessage();
-
-    $cache[$ip] = false;
+    $statut_cache = false;
 }
 
 // Sauvegarde le cache (création ou mise à jour)
+$cache[$ip] = $statut_cache;
 file_put_contents($cacheFile, json_encode($cache));
-
-
 die();
