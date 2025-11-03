@@ -1,7 +1,7 @@
 # docker-geoip-traefik-auth-midleware
 Un conteneur Docker fournissant un service d’authentification forwardAuth pour Traefik, qui block les visiteur hors d'un pays avec les données GeoIP locales à partir d’une base MaxMind ou IPinfo au format .mmdb.
 
-# Fonctionnalités
+## Fonctionnalités
 
 - Fournit une API HTTP simple compatible avec le middleware natif forwardAuth de Traefik.
 
@@ -11,17 +11,17 @@ Un conteneur Docker fournissant un service d’authentification forwardAuth pour
 
 - Utilisation 100% hors ligne.
 
-# ou trouver la BDD
+## ou trouver la BDD
 https://ipinfo.io/lite
 
 
-# build :
+## build :
 ```bash
 # Cloner le dépôt
 git clone https://github.com/veka-server/docker-geoip-traefik-auth-midleware.git
 cd docker-geoip-traefik-auth-midleware
 
-# (Optionnel) placer ta base GeoIP dans le dossier custom_data/
+# placer ta base GeoIP dans le dossier custom_data/
 mkdir -p custom_data
 cp /chemin/vers/ta/location.mmdb custom_data/location.mmdb
 
@@ -29,7 +29,7 @@ cp /chemin/vers/ta/location.mmdb custom_data/location.mmdb
 docker build -t geoip-auth:latest .
 ```
 
-# utilisation :
+## utilisation :
 ```bash
 docker run -d \
   --name geoip-auth \
@@ -39,7 +39,7 @@ docker run -d \
 ```
 
 
-# utilisation dans traefik :
+## utilisation dans traefik :
 remplace <MY_SERVICE> par ton service, ainsi que l'url de ton service
 ```bash
     labels:
@@ -50,7 +50,7 @@ remplace <MY_SERVICE> par ton service, ainsi que l'url de ton service
 ```
 
 
-# Image private incluant la bdd :
+## Image private incluant la bdd :
 
 ![Docker Pulls](https://img.shields.io/github/v/release/veka-server/docker-geoip-traefik-auth-midleware?label=GHCR)
 
@@ -60,6 +60,6 @@ remplace <MY_SERVICE> par ton service, ainsi que l'url de ton service
 $ docker pull ghcr.io/veka-server/docker-geoip-traefik-auth-midleware:main
 ```
 
-# Licence
+## Licence
 Projet open-source distribué sous licence MIT.
 Nécessite que vous respectiez les conditions d’utilisation de la base GeoIP utilisée (par ex. IPinfo Terms of Service).
