@@ -16,18 +16,40 @@ jobs:
         env:
           TOKEN_IPINFO: ${{ secrets.TOKEN_IPINFO }}
         run: |
+          set -e
           mkdir -p custom_data
-                   
-          # Télécharger avec headers pour voir l'erreur
-          curl -i -L -o /tmp/location.mmdb "https://ipinfo.io/data/ipinfo_lite.mmdb?token=${TOKEN_IPINFO}" 2>&1 | head -30          
+          
+          echo "Téléchargement de la base GeoIP depuis ipinfo.io..."
+          curl -s -L -o /tmp/location.mmdb "https://ipinfo.io/data/ipinfo_lite.mmdb?token=${TOKEN_IPINFO}"
 
-          if [ ! -f "/tmp/location.mmdb" ]; then
-            echo "❌ Erreur: location.mmdb non téléchargé"
+          echo "Téléchargement du fichier de checksums..."
+          curl -s -L -o /tmp/checksums.json "https://ipinfo.io/data/ipinfo_lite.mmdb/checksums?token=${TOKEN_IPINFO}"
+
+          # Vérifier que le fichier existe et a une taille suffisante (par sécurité)
+          if [ ! -s "/tmp/location.mmdb" ]; then
+            echo "Erreur: location.mmdb vide ou manquant"
             exit 1
           fi
 
+          echo "Fichier téléchargé: $(du -h /tmp/location.mmdb | cut -f1)"
+
+          # Extraire le SHA256 attendu depuis le JSON
+          EXPECTED_SHA256=$(jq -r '.checksums.sha256' /tmp/checksums.json)
+          echo "SHA256 attendu: $EXPECTED_SHA256"
+
+          # Calculer le SHA256 réel
+          ACTUAL_SHA256=$(sha256sum /tmp/location.mmdb | awk '{print $1}')
+          echo "SHA256 réel:    $ACTUAL_SHA256"
+
+          # Comparer les deux
+          if [ "$EXPECTED_SHA256" != "$ACTUAL_SHA256" ]; then
+            echo "Le checksum ne correspond pas. Téléchargement corrompu."
+            exit 1
+          fi
+
+          echo "Vérification réussie. Déplacement du fichier..."
           mv /tmp/location.mmdb ./custom_data/location.mmdb
-          echo "✅ Fichier prêt: $(du -h ./custom_data/location.mmdb | cut -f1)"
+          echo "Fichier prêt: $(du -h ./custom_data/location.mmdb | cut -f1)"
 
       # Upload en artifact
       - name: Upload custom data
