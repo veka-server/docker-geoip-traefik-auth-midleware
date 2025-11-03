@@ -58,7 +58,7 @@ try {
         }
 
     }
-    if( $cache[$ip] === false) {
+    else if( $cache[$ip] === false) {
         throw new \Exception("Mauvais pays from cache", 1);
     }
 
