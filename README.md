@@ -50,7 +50,7 @@ remplace <MY_SERVICE> par ton service, ainsi que l'url de ton service
 ```
 
 
-# Image private :
+# Image private incluant la bdd :
 
 ![Docker Pulls](https://img.shields.io/github/v/release/veka-server/docker-geoip-traefik-auth-midleware?label=GHCR)
 
