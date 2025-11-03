@@ -9,8 +9,14 @@ COPY ./src /app
 # Copier la Database depuis custom_data recup dans le github action
 COPY ./custom_data/location.mmdb /app/location.mmdb
 
-# Permissions (optionnel selon l'utilisateur du conteneur)
-RUN chmod 644 /app/location.mmdb
+# Copier conditionnellement la base s’il existe
+RUN if [ -f ./custom_data/location.mmdb ]; then \
+      echo "Copie du fichier location.mmdb détecté"; \
+      mkdir -p /app && cp ./custom_data/location.mmdb /app/location.mmdb; \
+      chmod 644 /app/location.mmdb \
+    else \
+      echo "Aucun fichier location.mmdb trouvé, passage"; \
+    fi
 
 WORKDIR /app
 
