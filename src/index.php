@@ -38,7 +38,7 @@ if (file_exists($cacheFile) && filesize($cacheFile) <= $maxCacheSize) {
 }
 
 $geoipDbFile = './location.mmdb';
-$country_code = 'country unknown';
+$country_code = '';
 
 try {
 
@@ -47,7 +47,7 @@ try {
         require_once 'vendor/autoload.php';
         $dbReader = new MaxMind\Db\Reader($geoipDbFile);
         $p = $dbReader->get($ip);
-        $country_code = $p[country_code] ?? '';
+        $country_code = $p['country_code'] ?? '';
         
         // Autorise seulement les IP du pays
         if ($country_code !== $pays) {
