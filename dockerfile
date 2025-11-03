@@ -1,7 +1,7 @@
 FROM alpine:latest
 
 # Installer PHP, FPM, Composer et utilitaires
-RUN apk add --no-cache php83 curl gzip unzip composer
+RUN apk add --no-cache php83 composer
 
 # Copier l'application
 COPY ./src /app
